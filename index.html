@@ -189,7 +189,7 @@
   <button id="rotate-button">Turn On</button>
 
   <!-- Welcome Message -->
-  <div id="message" class="message" style="display: none">
+  <div id="message" class="message" style="display: block">
     <h1>Welcome to the CT Scanner!</h1>
     <p>
       In this application you will be able to interact with the component parts of a CT scanner.
@@ -198,7 +198,7 @@
   </div>
 
   <!-- Start Button -->
-  <div id="startbutton" style="display: none; z-index: 200">
+  <div id="startbutton" style="display: block; z-index: 200">
     <h2>Start</h2>
   </div>
 
@@ -235,6 +235,7 @@
 
     <!-- 3D Model Assets -->
     <a-assets>
+      <a-asset-item id="boxes_asset" src="src/assets/boxes.glb"></a-asset-item>
       <a-asset-item id="gantry_housing_asset" src="src/assets/gantry_housing.glb"></a-asset-item>
       <a-asset-item id="gantry_ring_asset" src="src/assets/gantry_ring.glb"></a-asset-item>
       <a-asset-item id="xray_tube_asset" src="src/assets/xray_tube.glb"></a-asset-item>
@@ -296,6 +297,7 @@
     </a-entity>
 
     <!-- Static CT Scanner Components -->
+    <a-entity id="boxes" gltf-model="#boxes_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
     <a-entity id="gantry_housing" gltf-model="#gantry_housing_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
     <a-entity id="gantry_ring" gltf-model="#gantry_ring_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
     <a-entity id="slip_ring_assembly" gltf-model="#slip_ring_assembly_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
