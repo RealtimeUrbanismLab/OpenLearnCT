@@ -11,11 +11,11 @@
   <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="favicon.svg">
 
-  <!-- A-Frame Core (1.3.0 for compatibility) -->
-  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+  <!-- A-Frame Core -->
+  <script src="https://aframe.io/releases/1.4.2/aframe.min.js"></script>
 
-  <!-- Three.js r138 (compatible with A-Frame 1.3.0) -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r138/three.min.js"></script>
+  <!-- AR.js for location-based and marker-less AR on iOS -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
 
   <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -224,12 +224,14 @@
     </div>
   </div>
 
-  <!-- A-Frame Scene -->
+  <!-- A-Frame Scene with AR.js -->
   <a-scene
     next-button
     rotate-button
     selectcomponent
-    renderer="colorManagement: true; antialias: true; alpha: true"
+    embedded
+    arjs="sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;"
+    renderer="logarithmicDepthBuffer: true; colorManagement: true; antialias: true"
     vr-mode-ui="enabled: false"
     loading-screen="enabled: false">
 
@@ -251,13 +253,8 @@
       <a-asset-item id="safety_and_intercom_systems_asset" src="src/assets/safety_and_intercom_systems.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Camera -->
-    <a-camera
-      id="camera"
-      position="0 1.75 5"
-      raycaster="objects: .cantap"
-      cursor="fuse: false; rayOrigin: mouse;">
-    </a-camera>
+    <!-- AR Camera -->
+    <a-entity camera look-controls="enabled: false"></a-entity>
 
     <!-- Lighting Setup -->
     <!-- Main directional light (reduced intensity for better materials) -->
@@ -274,11 +271,16 @@
     <!-- Hemisphere light for more realistic lighting -->
     <a-light intensity="0.4" type="hemisphere" groundColor="#444444" color="#ffffbb"></a-light>
 
-    <!-- Model Container for Gesture Controls -->
-    <a-entity id="group" scale="1 1 1" shadow="receive: true; cast: true"></a-entity>
+    <!-- AR Anchor - appears when floor is detected -->
+    <a-marker preset="hiro" id="ar-anchor">
+      <!-- Scale down for AR viewing (real-world scale) -->
+      <a-entity id="ar-container" scale="0.5 0.5 0.5" position="0 0 0">
 
-    <!-- Rotating Components (X-ray tube, detector, collimators) -->
-    <a-entity id="rotation_pivot" position="0 0 0">
+        <!-- Model Container for Gesture Controls -->
+        <a-entity id="group" scale="1 1 1" shadow="receive: true; cast: true"></a-entity>
+
+        <!-- Rotating Components (X-ray tube, detector, collimators) -->
+        <a-entity id="rotation_pivot" position="0 0 0">
       <a-entity
         id="xray_tube"
         gltf-model="#xray_tube_asset"
@@ -309,15 +311,19 @@
     <a-entity id="laser_positioning_lights" gltf-model="#laser_positioning_lights_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
     <a-entity id="safety_and_intercom_systems" gltf-model="#safety_and_intercom_systems_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
 
-    <!-- Ground Plane with Shadows -->
-    <a-plane
-      id="ground"
-      rotation="-90 0 0"
-      width="1000"
-      height="1000"
-      color="#7BC8A4"
-      shadow="receive: true">
-    </a-plane>
+        <!-- Ground Plane with Shadows -->
+        <a-plane
+          id="ground"
+          rotation="-90 0 0"
+          width="10"
+          height="10"
+          color="#7BC8A4"
+          shadow="receive: true">
+        </a-plane>
+
+      </a-entity> <!-- close ar-container -->
+    </a-marker> <!-- close ar-anchor -->
+
   </a-scene>
 </body>
 </html>
