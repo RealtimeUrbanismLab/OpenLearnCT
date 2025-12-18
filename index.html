@@ -114,7 +114,7 @@
   </style>
 
   <!-- App JavaScript Modules -->
-  <script type="module" crossorigin src="./assets/index-DGIECK4U.js"></script>
+  <script type="module" crossorigin src="./assets/index-Dpi91abq.js"></script>
   <link rel="stylesheet" crossorigin href="./assets/index-CSl1VODh.css">
 </head>
 <body>
@@ -222,10 +222,10 @@
     <a-light intensity="0.4" type="hemisphere" groundColor="#444444" color="#ffffbb"></a-light>
 
     <!-- AR Container - positioned in world space for AR placement -->
-    <a-entity id="ar-container" visible="true" position="0 0 -2">
+    <a-entity id="ar-container" visible="true" position="0 0.5 -3">
 
       <!-- Model Container for Gesture Controls -->
-      <a-entity id="group" scale="0.5 0.5 0.5" shadow="receive: true; cast: true"></a-entity>
+      <a-entity id="group" scale="1 1 1" gesture-handler shadow="receive: true; cast: true"></a-entity>
 
       <!-- Rotating Components (X-ray tube, detector, collimators) -->
       <a-entity id="rotation_pivot" position="0 0 0">
@@ -263,6 +263,7 @@
       <a-plane
         id="ground"
         rotation="-90 0 0"
+        position="0 -0.5 0"
         width="10"
         height="10"
         color="#7BC8A4"
