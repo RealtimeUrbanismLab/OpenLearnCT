@@ -1,5 +1,28 @@
 # WebXR AR Mode - Quick Guide
 
+## IMPORTANT: Current Status
+
+**What's Working:**
+- ✅ 3D preview mode on desktop and mobile (no camera)
+- ✅ Click/tap to select components and view information
+- ✅ Drag to rotate, pinch to zoom on mobile
+- ✅ All 14 CT Scanner components interactive
+
+**AR Mode Limitations:**
+- ⚠️ **iPhone/iPad**: WebXR is experimental and mostly NOT working yet
+- ✅ **Android ARCore devices**: Should work with Chrome
+- 🔬 **Status**: This is cutting-edge tech - limited device support
+
+## For TRUE AR on iPhone, you need:
+
+1. **AR Quick Look** (Apple's native AR) - requires USDZ models
+2. **8thWall** (paid service) - what your original app used
+3. **Wait for iOS WebXR support** - coming eventually
+
+**For now, this app works as an interactive 3D viewer on all devices.**
+
+---
+
 ## HTTPS Required for AR!
 
 WebXR AR requires HTTPS and camera access. Here's how to test and deploy:

@@ -263,23 +263,33 @@
       <a-asset-item id="safety_and_intercom_systems_asset" src="src/assets/safety_and_intercom_systems.glb"></a-asset-item>
     </a-assets>
 
-    <!-- Camera for both AR and non-AR modes -->
-    <a-entity id="camera" camera position="0 1.6 3" look-controls="enabled: true"></a-entity>
+    <!-- Camera for both AR and non-AR modes with raycaster for clicking -->
+    <a-entity id="camera" camera position="0 1.6 3" look-controls="enabled: true">
+      <a-entity
+        cursor="rayOrigin: mouse; fuse: false"
+        raycaster="objects: .cantap; far: 20"></a-entity>
+    </a-entity>
 
-    <!-- Lighting Setup -->
-    <!-- Main directional light (reduced intensity for better materials) -->
+    <!-- Lighting Setup - Improved for better material rendering -->
+    <!-- Main directional light (softer intensity) -->
     <a-entity
-      light="intensity: 1.8; type: directional; castShadow: true;
+      light="intensity: 1.2; type: directional; castShadow: true;
              shadowMapHeight: 2048; shadowMapWidth: 2048;
              shadowRadius: 2; shadowBias: -0.00005"
       position="-20 20 20">
     </a-entity>
 
-    <!-- Ambient light for overall illumination -->
-    <a-light intensity="0.6" type="ambient" color="#ffffff"></a-light>
+    <!-- Ambient light for overall illumination (increased for better visibility) -->
+    <a-light intensity="0.8" type="ambient" color="#ffffff"></a-light>
 
-    <!-- Hemisphere light for more realistic lighting -->
-    <a-light intensity="0.4" type="hemisphere" groundColor="#444444" color="#ffffbb"></a-light>
+    <!-- Hemisphere light for realistic lighting -->
+    <a-light intensity="0.5" type="hemisphere" groundColor="#888888" color="#ffffff"></a-light>
+
+    <!-- Fill light from opposite side to reduce harsh shadows -->
+    <a-entity
+      light="intensity: 0.6; type: directional;"
+      position="20 10 -20">
+    </a-entity>
 
     <!-- AR Container - positioned in world space for AR placement -->
     <a-entity id="ar-container" visible="true" position="0 0.5 -3">
@@ -319,15 +329,16 @@
     <a-entity id="laser_positioning_lights" gltf-model="#laser_positioning_lights_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
     <a-entity id="safety_and_intercom_systems" gltf-model="#safety_and_intercom_systems_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
 
-      <!-- Ground Plane with Shadows -->
+      <!-- Ground Plane with Shadows (invisible but receives shadows) -->
       <a-plane
         id="ground"
         rotation="-90 0 0"
         position="0 -0.5 0"
         width="10"
         height="10"
-        color="#7BC8A4"
-        shadow="receive: true">
+        material="opacity: 0; transparent: true"
+        shadow="receive: true"
+        visible="false">
       </a-plane>
 
     </a-entity> <!-- close ar-container -->
