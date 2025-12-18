@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="description" content="Interactive CT Scanner educational AR application">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>CT Scanner - OpenLearn AR</title>
+
+  <!-- A-Frame Core (1.3.0 for compatibility) -->
+  <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+
+  <!-- Three.js r138 (compatible with A-Frame 1.3.0) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r138/three.min.js"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet">
+
+  <!-- App Styles -->
+  <link rel="stylesheet" href="src/index.css">
+
+  <!-- Inline styles for critical UI elements -->
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #rotate-button,
+    #startbutton {
+      position: fixed;
+      z-index: 9999;
+      pointer-events: auto;
+      touch-action: manipulation;
+    }
+
+    #rotate-button {
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background-color: rgba(240, 240, 240, 0.9);
+      border: 2px solid white;
+      border-radius: 8px;
+      font-family: 'Poppins', sans-serif;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    #rotate-button:hover {
+      background-color: rgba(220, 220, 220, 0.9);
+    }
+
+    #rotate-button:active {
+      background-color: rgba(200, 200, 200, 0.9);
+    }
+
+    /* Loading indicator */
+    #loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 10000;
+      color: white;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    #loading-screen h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      font-weight: 700;
+    }
+
+    #loading-progress {
+      width: 60%;
+      max-width: 400px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.3);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 20px;
+    }
+
+    #loading-bar {
+      width: 0%;
+      height: 100%;
+      background: white;
+      transition: width 0.3s;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 5px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+  </style>
+
+  <!-- App JavaScript Modules -->
+  <script type="module">
+    // iOS compatibility fix
+    const IS_IOS =
+      /^(iPad|iPhone|iPod)/.test(window.navigator.platform) ||
+      (/^Mac/.test(window.navigator.platform) && window.navigator.maxTouchPoints > 1);
+    if (IS_IOS) {
+      window.createImageBitmap = undefined;
+    }
+
+    // Import components
+    import { nextButtonComponent } from './src/next-button.js';
+    import { rotateButtonComponent } from './src/rotate-button.js';
+    import { selectcomponent } from './src/selectcomponent.js';
+    import { gestureHandlerComponent } from './src/gesture-handler.js';
+
+    // Loading progress tracking
+    let loadedAssets = 0;
+    const totalAssets = 13; // Number of 3D models to load
+
+    function updateLoadingProgress() {
+      loadedAssets++;
+      const progress = (loadedAssets / totalAssets) * 100;
+      const loadingBar = document.getElementById('loading-bar');
+      if (loadingBar) {
+        loadingBar.style.width = progress + '%';
+      }
+
+      if (loadedAssets >= totalAssets) {
+        setTimeout(() => {
+          const loadingScreen = document.getElementById('loading-screen');
+          if (loadingScreen) {
+            loadingScreen.style.opacity = '0';
+            loadingScreen.style.transition = 'opacity 0.5s';
+            setTimeout(() => loadingScreen.remove(), 500);
+          }
+        }, 500);
+      }
+    }
+
+    // Register A-Frame components when ready
+    if (typeof AFRAME !== 'undefined') {
+      AFRAME.registerComponent('next-button', nextButtonComponent());
+      AFRAME.registerComponent('rotate-button', rotateButtonComponent());
+      AFRAME.registerComponent('gesture-handler', gestureHandlerComponent);
+
+      // Register selectcomponent as A-Frame component
+      AFRAME.registerComponent('selectcomponent', {
+        init() {
+          this.el.addEventListener('loaded', () => {
+            selectcomponent();
+          });
+        }
+      });
+
+      // Track asset loading
+      AFRAME.registerComponent('track-loading', {
+        init() {
+          this.el.addEventListener('model-loaded', () => {
+            updateLoadingProgress();
+          });
+        }
+      });
+    }
+  </script>
+</head>
+<body>
+  <!-- Loading Screen -->
+  <div id="loading-screen">
+    <h1>Loading CT Scanner</h1>
+    <div class="spinner"></div>
+    <div id="loading-progress">
+      <div id="loading-bar"></div>
+    </div>
+    <p style="margin-top: 20px; opacity: 0.8;">Preparing 3D models...</p>
+  </div>
+
+  <!-- Rotate Button -->
+  <button id="rotate-button">Turn On</button>
+
+  <!-- Welcome Message -->
+  <div id="message" class="message" style="display: none">
+    <h1>Welcome to the CT Scanner!</h1>
+    <p>
+      In this application you will be able to interact with the component parts of a CT scanner.
+      Please use the buttons, or click on a model part to find out more information!
+    </p>
+  </div>
+
+  <!-- Start Button -->
+  <div id="startbutton" style="display: none; z-index: 200">
+    <h2>Start</h2>
+  </div>
+
+  <!-- Place Button -->
+  <div id="placebutton" style="display: none; z-index: 200">
+    <h2>Move the CT Scanner with your fingers and press this button</h2>
+  </div>
+
+  <!-- Popup for Component Information -->
+  <div id="popup" class="popup" style="display: none">
+    <div id="popup-title" class="popuptitle"></div>
+    <div id="popup-content-wrapper" class="popup-content-wrapper">
+      <div id="popup-content" class="popup-content">
+        <div id="popup-image"></div>
+      </div>
+    </div>
+    <div class="popup-close-icon">
+      <span id="close-popup">&#10006;</span>
+    </div>
+    <div class="button-container">
+      <div id="backbutton" style="display: none; z-index: 200"><h2>Back</h2></div>
+      <div id="nextbutton" style="display: none; z-index: 200"><h2>Next</h2></div>
+    </div>
+  </div>
+
+  <!-- A-Frame Scene -->
+  <a-scene
+    next-button
+    rotate-button
+    selectcomponent
+    renderer="colorManagement: true; antialias: true; alpha: true"
+    vr-mode-ui="enabled: false"
+    loading-screen="enabled: false">
+
+    <!-- 3D Model Assets -->
+    <a-assets>
+      <a-asset-item id="gantry_housing_asset" src="src/assets/gantry_housing.glb" track-loading></a-asset-item>
+      <a-asset-item id="gantry_ring_asset" src="src/assets/gantry_ring.glb" track-loading></a-asset-item>
+      <a-asset-item id="xray_tube_asset" src="src/assets/xray_tube.glb" track-loading></a-asset-item>
+      <a-asset-item id="detector_array_asset" src="src/assets/detector_array.glb" track-loading></a-asset-item>
+      <a-asset-item id="slip_ring_assembly_asset" src="src/assets/slip_ring_assembly.glb" track-loading></a-asset-item>
+      <a-asset-item id="collimators_asset" src="src/assets/collimators.glb" track-loading></a-asset-item>
+      <a-asset-item id="bore_asset" src="src/assets/bore.glb" track-loading></a-asset-item>
+      <a-asset-item id="patient_table_asset" src="src/assets/patient_table.glb" track-loading></a-asset-item>
+      <a-asset-item id="control_console_asset" src="src/assets/control_console.glb" track-loading></a-asset-item>
+      <a-asset-item id="image_reconstruction_computer_asset" src="src/assets/image_reconstruction_computer.glb" track-loading></a-asset-item>
+      <a-asset-item id="cooling_system_asset" src="src/assets/cooling_system.glb" track-loading></a-asset-item>
+      <a-asset-item id="laser_positioning_lights_asset" src="src/assets/laser_positioning_lights.glb" track-loading></a-asset-item>
+      <a-asset-item id="safety_and_intercom_systems_asset" src="src/assets/safety_and_intercom_systems.glb" track-loading></a-asset-item>
+    </a-assets>
+
+    <!-- Camera -->
+    <a-camera
+      id="camera"
+      position="0 1.75 5"
+      raycaster="objects: .cantap"
+      cursor="fuse: false; rayOrigin: mouse;">
+    </a-camera>
+
+    <!-- Lighting Setup -->
+    <!-- Main directional light (reduced intensity for better materials) -->
+    <a-entity
+      light="intensity: 1.8; type: directional; castShadow: true;
+             shadowMapHeight: 2048; shadowMapWidth: 2048;
+             shadowRadius: 2; shadowBias: -0.00005"
+      position="-20 20 20">
+    </a-entity>
+
+    <!-- Ambient light for overall illumination -->
+    <a-light intensity="0.6" type="ambient" color="#ffffff"></a-light>
+
+    <!-- Hemisphere light for more realistic lighting -->
+    <a-light intensity="0.4" type="hemisphere" groundColor="#444444" color="#ffffbb"></a-light>
+
+    <!-- Model Container for Gesture Controls -->
+    <a-entity id="group" scale="1 1 1" shadow="receive: true; cast: true"></a-entity>
+
+    <!-- Rotating Components (X-ray tube, detector, collimators) -->
+    <a-entity id="rotation_pivot" position="0 0 0">
+      <a-entity
+        id="xray_tube"
+        gltf-model="#xray_tube_asset"
+        class="cantap rotatable"
+        shadow="receive: true; cast: true"></a-entity>
+      <a-entity
+        id="detector_array"
+        gltf-model="#detector_array_asset"
+        class="cantap rotatable"
+        shadow="receive: true; cast: true"></a-entity>
+      <a-entity
+        id="collimators"
+        gltf-model="#collimators_asset"
+        class="cantap rotatable"
+        shadow="receive: true; cast: true"></a-entity>
+    </a-entity>
+
+    <!-- Static CT Scanner Components -->
+    <a-entity id="gantry_housing" gltf-model="#gantry_housing_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="gantry_ring" gltf-model="#gantry_ring_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="slip_ring_assembly" gltf-model="#slip_ring_assembly_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="bore" gltf-model="#bore_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="patient_table" gltf-model="#patient_table_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="control_console" gltf-model="#control_console_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="image_reconstruction_computer" gltf-model="#image_reconstruction_computer_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="cooling_system" gltf-model="#cooling_system_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="laser_positioning_lights" gltf-model="#laser_positioning_lights_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+    <a-entity id="safety_and_intercom_systems" gltf-model="#safety_and_intercom_systems_asset" class="cantap" shadow="receive: true; cast: true"></a-entity>
+
+    <!-- Ground Plane with Shadows -->
+    <a-plane
+      id="ground"
+      rotation="-90 0 0"
+      width="1000"
+      height="1000"
+      color="#7BC8A4"
+      shadow="receive: true">
+    </a-plane>
+  </a-scene>
+</body>
+</html>

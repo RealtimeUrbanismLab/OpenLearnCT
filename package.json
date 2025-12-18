@@ -1,0 +1,32 @@
+{
+  "name": "openlearn-ct-scanner",
+  "version": "1.0.0",
+  "description": "Interactive CT Scanner educational AR application",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "serve": "python server.py"
+  },
+  "keywords": [
+    "ar",
+    "webxr",
+    "ct-scanner",
+    "education",
+    "medical",
+    "3d"
+  ],
+  "author": "Realtime Urbanism Lab",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RealtimeUrbanismLab/OpenLearnCT.git"
+  },
+  "devDependencies": {
+    "vite": "^5.0.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
