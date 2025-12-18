@@ -8,6 +8,9 @@
   <meta name="mobile-web-app-capable" content="yes">
   <title>CT Scanner - OpenLearn AR</title>
 
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+
   <!-- A-Frame Core (1.3.0 for compatibility) -->
   <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
 
@@ -129,29 +132,30 @@
     import { selectcomponent } from './src/selectcomponent.js';
     import { gestureHandlerComponent } from './src/gesture-handler.js';
 
-    // Loading progress tracking
-    let loadedAssets = 0;
-    const totalAssets = 13; // Number of 3D models to load
-
-    function updateLoadingProgress() {
-      loadedAssets++;
-      const progress = (loadedAssets / totalAssets) * 100;
-      const loadingBar = document.getElementById('loading-bar');
-      if (loadingBar) {
-        loadingBar.style.width = progress + '%';
-      }
-
-      if (loadedAssets >= totalAssets) {
-        setTimeout(() => {
-          const loadingScreen = document.getElementById('loading-screen');
-          if (loadingScreen) {
-            loadingScreen.style.opacity = '0';
-            loadingScreen.style.transition = 'opacity 0.5s';
-            setTimeout(() => loadingScreen.remove(), 500);
-          }
-        }, 500);
+    // Simple loading screen removal after scene loads
+    function hideLoadingScreen() {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.style.opacity = '0';
+        loadingScreen.style.transition = 'opacity 0.5s';
+        setTimeout(() => loadingScreen.remove(), 500);
       }
     }
+
+    // Wait for DOM to be ready
+    window.addEventListener('DOMContentLoaded', () => {
+      const scene = document.querySelector('a-scene');
+
+      if (scene) {
+        // Hide loading screen when scene is loaded
+        scene.addEventListener('loaded', () => {
+          setTimeout(hideLoadingScreen, 1000);
+        });
+      }
+
+      // Fallback: hide after 5 seconds regardless
+      setTimeout(hideLoadingScreen, 5000);
+    });
 
     // Register A-Frame components when ready
     if (typeof AFRAME !== 'undefined') {
@@ -164,15 +168,6 @@
         init() {
           this.el.addEventListener('loaded', () => {
             selectcomponent();
-          });
-        }
-      });
-
-      // Track asset loading
-      AFRAME.registerComponent('track-loading', {
-        init() {
-          this.el.addEventListener('model-loaded', () => {
-            updateLoadingProgress();
           });
         }
       });
@@ -240,19 +235,19 @@
 
     <!-- 3D Model Assets -->
     <a-assets>
-      <a-asset-item id="gantry_housing_asset" src="src/assets/gantry_housing.glb" track-loading></a-asset-item>
-      <a-asset-item id="gantry_ring_asset" src="src/assets/gantry_ring.glb" track-loading></a-asset-item>
-      <a-asset-item id="xray_tube_asset" src="src/assets/xray_tube.glb" track-loading></a-asset-item>
-      <a-asset-item id="detector_array_asset" src="src/assets/detector_array.glb" track-loading></a-asset-item>
-      <a-asset-item id="slip_ring_assembly_asset" src="src/assets/slip_ring_assembly.glb" track-loading></a-asset-item>
-      <a-asset-item id="collimators_asset" src="src/assets/collimators.glb" track-loading></a-asset-item>
-      <a-asset-item id="bore_asset" src="src/assets/bore.glb" track-loading></a-asset-item>
-      <a-asset-item id="patient_table_asset" src="src/assets/patient_table.glb" track-loading></a-asset-item>
-      <a-asset-item id="control_console_asset" src="src/assets/control_console.glb" track-loading></a-asset-item>
-      <a-asset-item id="image_reconstruction_computer_asset" src="src/assets/image_reconstruction_computer.glb" track-loading></a-asset-item>
-      <a-asset-item id="cooling_system_asset" src="src/assets/cooling_system.glb" track-loading></a-asset-item>
-      <a-asset-item id="laser_positioning_lights_asset" src="src/assets/laser_positioning_lights.glb" track-loading></a-asset-item>
-      <a-asset-item id="safety_and_intercom_systems_asset" src="src/assets/safety_and_intercom_systems.glb" track-loading></a-asset-item>
+      <a-asset-item id="gantry_housing_asset" src="src/assets/gantry_housing.glb"></a-asset-item>
+      <a-asset-item id="gantry_ring_asset" src="src/assets/gantry_ring.glb"></a-asset-item>
+      <a-asset-item id="xray_tube_asset" src="src/assets/xray_tube.glb"></a-asset-item>
+      <a-asset-item id="detector_array_asset" src="src/assets/detector_array.glb"></a-asset-item>
+      <a-asset-item id="slip_ring_assembly_asset" src="src/assets/slip_ring_assembly.glb"></a-asset-item>
+      <a-asset-item id="collimators_asset" src="src/assets/collimators.glb"></a-asset-item>
+      <a-asset-item id="bore_asset" src="src/assets/bore.glb"></a-asset-item>
+      <a-asset-item id="patient_table_asset" src="src/assets/patient_table.glb"></a-asset-item>
+      <a-asset-item id="control_console_asset" src="src/assets/control_console.glb"></a-asset-item>
+      <a-asset-item id="image_reconstruction_computer_asset" src="src/assets/image_reconstruction_computer.glb"></a-asset-item>
+      <a-asset-item id="cooling_system_asset" src="src/assets/cooling_system.glb"></a-asset-item>
+      <a-asset-item id="laser_positioning_lights_asset" src="src/assets/laser_positioning_lights.glb"></a-asset-item>
+      <a-asset-item id="safety_and_intercom_systems_asset" src="src/assets/safety_and_intercom_systems.glb"></a-asset-item>
     </a-assets>
 
     <!-- Camera -->
