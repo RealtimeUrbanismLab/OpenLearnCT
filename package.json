@@ -24,6 +24,7 @@
     "url": "https://github.com/RealtimeUrbanismLab/OpenLearnCT.git"
   },
   "devDependencies": {
+    "terser": "^5.44.1",
     "vite": "^5.0.0"
   },
   "engines": {

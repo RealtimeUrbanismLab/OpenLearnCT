@@ -1,4 +1,6 @@
 import { defineConfig } from 'vite'
+import { cpSync } from 'fs'
+import { resolve } from 'path'
 
 export default defineConfig({
   base: './',
@@ -22,4 +24,14 @@ export default defineConfig({
   optimizeDeps: {
     exclude: ['three'],
   },
+  publicDir: 'public',
+  plugins: [
+    {
+      name: 'copy-src',
+      closeBundle() {
+        // Copy src directory to dist after build
+        cpSync('src', 'dist/src', { recursive: true })
+      }
+    }
+  ]
 })
