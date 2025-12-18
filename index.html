@@ -130,6 +130,7 @@
     import { selectcomponent } from './src/selectcomponent.js';
     import { gestureHandlerComponent } from './src/gesture-handler.js';
     import { arModeComponent } from './src/ar-mode.js';
+    import { startButton } from './src/start-button.js';
 
     // Simple loading screen removal after scene loads
     function hideLoadingScreen() {
@@ -154,6 +155,9 @@
 
       // Fallback: hide after 5 seconds regardless
       setTimeout(hideLoadingScreen, 5000);
+
+      // Initialize start button
+      startButton.init();
     });
 
     // Register A-Frame components when ready
@@ -279,10 +283,10 @@
     <a-light intensity="0.4" type="hemisphere" groundColor="#444444" color="#ffffbb"></a-light>
 
     <!-- AR Container - positioned in world space for AR placement -->
-    <a-entity id="ar-container" visible="true" position="0 0 -2">
+    <a-entity id="ar-container" visible="true" position="0 0.5 -3">
 
       <!-- Model Container for Gesture Controls -->
-      <a-entity id="group" scale="0.5 0.5 0.5" shadow="receive: true; cast: true"></a-entity>
+      <a-entity id="group" scale="1 1 1" gesture-handler shadow="receive: true; cast: true"></a-entity>
 
       <!-- Rotating Components (X-ray tube, detector, collimators) -->
       <a-entity id="rotation_pivot" position="0 0 0">
@@ -320,6 +324,7 @@
       <a-plane
         id="ground"
         rotation="-90 0 0"
+        position="0 -0.5 0"
         width="10"
         height="10"
         color="#7BC8A4"
